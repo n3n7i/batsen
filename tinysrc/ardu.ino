@@ -1,7 +1,7 @@
 
-#include <arduino.h>
+#include <Arduino.h>
 
-flaot readval =0;
+float readval =0;
 const float voltage_divide = 10.0;
 
 const float voltage_ref = 1.1;
@@ -29,12 +29,34 @@ void setup() {
 void loop() {
 
   float voltread = (readval / 1023.0) * voltage_divide * voltage_ref;
-  
-  //
-  
-  
 
+  float k = 0;
+
+  while ((k+1.0) < voltread){  // long blink off per volt
+    PORTB ^= 0x01; //off 
+    delay(750);
+    PORTB ^= 0x01; //on
+    delay(500);
+    k += 1.0;
+    }
+
+  while ((k+0.2) < voltread){  //short blink off per 0.2 volt
+    PORTB ^= 0x01; //off
+    delay(250);
+    PORTB ^= 0x01; //on
+    delay(250);
+    k += 0.2;
+    }
+
+  delay(2500);
+
+
+  ADCSRA |= 0x40;                  // ADC READ
+  while(ADCSRA & 0x40);            // wait  
+  readval = (ADCH << 8) + ADCL;    // result
+    
   }
+  
 
 
 
